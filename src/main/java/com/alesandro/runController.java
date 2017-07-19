@@ -1,36 +1,25 @@
 package com.alesandro;
 
-import com.mashape.unirest.http.JsonNode;
-
-
-import com.mashape.unirest.http.HttpResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.JsonNodeCreator;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.ObjectMapper;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
-import org.json.simple.JSONArray;
+//import org.json.simple.JSONArray;
+//import org.json.simple.JSONObject;
 
-import org.json.simple.JSONObject;
+import java.io.FileWriter;
+import java.io.IOException;
+
+//import com.fasterxml.jackson.databind.ObjectMapper;
 /*import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;*/
-
-
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
-import spark.Spark;
-import static spark.Spark.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 /**
  * Created by ALESANDROMarques on 2017-07-18.
  */
@@ -41,76 +30,57 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 
 public class runController {
+
+
     public static void main(String[] args) {
 
+        Unirest.setObjectMapper(new ObjectMapper() {
+            private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
+                    = new com.fasterxml.jackson.databind.ObjectMapper();
 
-        ObjectNode jsonNode = returnNode();
+            public <T> T readValue(String value, Class<T> valueType) {
+                try {
+                    return jacksonObjectMapper.readValue(value, valueType);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            public String writeValue(Object value) {
+                try {
+                    return jacksonObjectMapper.writeValueAsString(value);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+
+        registerJson register = new registerJson("practise");
+
+
+       // JSONObject jsonNode = returnObj();
 
         HttpResponse<JsonNode> jsonResponse = null;
-        String COREURL = "";
+        String COREURL = "http://mdmubu108.torolab.ibm.com:8080/services";
         try {
-            jsonResponse = Unirest.post(COREURL + "/services/register")
-                    .body(jsonNode)
+            jsonResponse = Unirest.post(COREURL)
+                    .body(register.returnNode())
                     .asJson();
             // .asJson converts responce , could be .asString()
         } catch (UnirestException e) {
             e.printStackTrace();
             System.out.println("Error: Invalid core URL or port $COREURL");
         }
+        System.out.println();
+        System.out.println(jsonResponse.getStatus());
         System.out.println(jsonResponse.getBody());
 
     }
 
 
 
-
-    public static void temp (){
-
-
-
-
-
-        // get("/hello", (req, res) -> "Hello People");
-        JSONObject reg = registerService();
-        String regString = reg.toString();
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode jsonNode = null;
-        try {
-            jsonNode = mapper.readValue(regString, ObjectNode.class);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        System.out.println(jsonNode.toString());
-        String COREURL = "somthing.com";
-
-       /* try
-        {
-            //Register the service with Core. We are ready for work
-
-            post(COREURL + "/services/register", data=reg );
-        }catch(Exception e)
-        {
-            e.printStackTrace();
-            System.out.println("Error: Invalid core URL or port $COREURL");
-
-        }*/
-
-        //  HttpResponse<String> jsonResponse = null;
-        HttpResponse<JsonNode> jsonResponse = null;
-        try {
-            jsonResponse = Unirest.post(COREURL + "/services/register")
-                    .body(jsonNode)
-                    .asJson();
-            // .asJson converts responce , could be .asString()
-        } catch (UnirestException e) {
-            e.printStackTrace();
-            System.out.println("Error: Invalid core URL or port $COREURL");
-        }
-        System.out.println(jsonResponse.getBody());
-    }
-
-
-    public static JSONObject registerService() {
+    public static JSONObject returnObj() {
         JSONObject obj = new JSONObject();
         obj.put("name", "emptyJavatool");
         obj.put("version", "1.0.0");
@@ -118,84 +88,47 @@ public class runController {
 
 
         JSONObject input = new JSONObject();
+
         input.put("key", "key1");
         input.put("type", "number");
         input.put("required", "false");
         input.put("default", "40");
 
         JSONArray inputs = new JSONArray();
-        inputs.add(input);
+        //inputs.add(input);
+        inputs.put(input);
 
 
         JSONObject output = new JSONObject();
         output.put("key", "key1");
         output.put("type", "number");
-        output.put("required", "false");
+        output.put("optional", "false");
 
         JSONArray outputs = new JSONArray();
-        outputs.add(output);
+        outputs.put(output);
+        //outputs.add(output);
 
 
         JSONObject props = new JSONObject();
+
         props.put("inputs", inputs);
         props.put("outputs", outputs);
 
-        obj.put("Properties", props);
+        obj.put("properties", props);
 
         try (FileWriter file = new FileWriter("test.json")) {
 
-            file.write(obj.toJSONString());
+
+            file.write(obj.toString());
             file.flush();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.print(obj);
+        System.out.print(obj.toString());
         return obj;
     }
 
-    public static ObjectNode returnNode() {
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode obj = mapper.createObjectNode();
-        obj.put("name", "emptyJavatool");
-        obj.put("version", "1.0.0");
-        obj.put("url", "localhost:4567");
-
-
-        ObjectNode input = mapper.createObjectNode();
-        input.put("key", "key1");
-        input.put("type", "number");
-        input.put("required", "false");
-        input.put("default", "40");
-
-        ArrayNode inputs = mapper.createArrayNode();
-        inputs.add(input);
-
-
-
-        ObjectNode output = mapper.createObjectNode();
-        output.put("key", "key1");
-        output.put("type", "number");
-        output.put("required", "false");
-
-        ArrayNode outputs = mapper.createArrayNode();
-        outputs.add(output);
-
-
-        ObjectNode props = mapper.createObjectNode();
-        props.putArray("inputs").addAll(inputs);
-        props.putArray("outputs").addAll(outputs);
-
-        obj.putPOJO("Properties", props);
-
-try {
-    System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj));
-}catch(Exception e){
-    e.printStackTrace();
-
-}
-return obj;
-    }
 }
