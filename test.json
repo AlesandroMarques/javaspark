@@ -1,0 +1,1 @@
+{"name":"emptyJavatool","Properties":{"outputs":[{"type":"number","key":"key1","required":"false"}],"inputs":[{"default":"40","type":"number","key":"key1","required":"false"}]},"version":"1.0.0","url":"localhost:4567"}

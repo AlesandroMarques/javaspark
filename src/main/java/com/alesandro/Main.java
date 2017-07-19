@@ -10,8 +10,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 public class Main {
 
+    private int id;
+
+    public Main (int id){
+        this.id=id;
+
+    }
 
 
+    public static void run (){
+        System.out.println("service is running ");
 
+    }
 
 }
