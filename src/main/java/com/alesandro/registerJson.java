@@ -33,8 +33,13 @@ public class registerJson {
         ObjectNode obj = mapper.createObjectNode();
         obj.put("name", "emptyJavatool");
         obj.put("version", "1.0.0");
-        obj.put("url", "localhost:4567");
 
+
+        ObjectNode server = mapper.createObjectNode();
+        server.put("url", "localhost:4567");
+          server.put("threads", "1");
+
+        obj.putPOJO("server", server);
 
         ObjectNode input = mapper.createObjectNode();
         input.put("key", "key1");

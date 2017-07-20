@@ -6,20 +6,18 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-//import org.json.simple.JSONArray;
-//import org.json.simple.JSONObject;
+
 
 import java.io.FileWriter;
 import java.io.IOException;
 
-//import com.fasterxml.jackson.databind.ObjectMapper;
-/*import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;*/
+
 /**
  * Created by ALESANDROMarques on 2017-07-18.
  */
@@ -56,36 +54,49 @@ public class runController {
         });
 
 
-        registerJson register = new registerJson("practise");
 
 
-       // JSONObject jsonNode = returnObj();
 
-        HttpResponse<JsonNode> jsonResponse = null;
+
+       registerJson register = new registerJson("practise");
+
+
+        HttpResponse<String> jsonResponse = null;
         String COREURL = "http://mdmubu108.torolab.ibm.com:8080/services";
         try {
             jsonResponse = Unirest.post(COREURL)
                     .body(register.returnNode())
-                    .asJson();
-            // .asJson converts responce , could be .asString()
+                    .asString();
+            // for json return <JsonNode> .asJson();
         } catch (UnirestException e) {
             e.printStackTrace();
             System.out.println("Error: Invalid core URL or port $COREURL");
         }
         System.out.println();
         System.out.println(jsonResponse.getStatus());
-        System.out.println(jsonResponse.getBody());
+      //  System.out.println(jsonResponse.getBody());
 
     }
 
 
 
+
+
+
+
+
+/*
+// not needed becuase created in class registerJSON
     public static JSONObject returnObj() {
         JSONObject obj = new JSONObject();
         obj.put("name", "emptyJavatool");
         obj.put("version", "1.0.0");
-        obj.put("url", "localhost:4567");
 
+
+        JSONObject server = new JSONObject();
+        server.put("url", "localhost:4567");
+        server.put("threads", "1");
+        obj.put("server", server);
 
         JSONObject input = new JSONObject();
 
@@ -128,7 +139,7 @@ public class runController {
 
         System.out.print(obj.toString());
         return obj;
-    }
+    }*/
 
 
 }
