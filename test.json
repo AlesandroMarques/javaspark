@@ -1,1 +1,1 @@
-{"name":"emptyJavatool","version":"1.0.0","server":{"url":"localhost:4567","threads":"1"},"properties":{"inputs":[{"key":"key1","type":"number","required":"false","default":"40"}],"outputs":[{"key":"key1","type":"number","optional":"false"}]}}
+{"name":"emptyJavatool3","version":"1.0.0","server":{"url":"localhost:4567","threads":"1"},"properties":{"inputs":[{"key":"key1","type":"number","required":"false","default":"40"}],"outputs":[{"key":"key1","type":"number","optional":"false"}]}}
