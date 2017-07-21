@@ -31,13 +31,13 @@ public class registerJson {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode obj = mapper.createObjectNode();
-        obj.put("name", "emptyJavatool3");
+        obj.put("name", "emptyJavatoolTEST");
         obj.put("version", "1.0.0");
 
 
         ObjectNode server = mapper.createObjectNode();
-        server.put("url", "localhost:4567");
-          //server.put("url", "/mdmubu107.torolab.ibm.com");
+        //server.put("url", "localhost:4567");
+          server.put("url", "http://mdmubu107.torolab.ibm.com:8080/");
           server.put("threads", "1");
 
         obj.putPOJO("server", server);
@@ -91,8 +91,8 @@ return obj;
     public ObjectNode returnNode2() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode obj = mapper.createObjectNode();
-        obj.put("name", "emptyJavatool");
-        obj.put("host", "http://mdmubu107.torolab.ibm.com");
+        obj.put("name", "emptyJavatoolTEST");
+        obj.put("host", "http://mdmubu107.torolab.ibm.com:8080/");
 
         return  obj;
 
