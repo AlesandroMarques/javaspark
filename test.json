@@ -1,1 +1,1 @@
-{"name":"emptyJavatool4","version":"1.0.0","server":{"url":"localhost:4567","threads":"1"},"Properties":{"inputs":[{"key":"key1","type":"number","required":"false","default":"40"}],"outputs":[{"key":"key1","type":"number","optional":"false"}]}}
+{"name":"emptyJavaToolTEST","version":"1.0.0","server":{"url":"http://mdmubu107.torolab.ibm.com:8080/","threads":"1"},"properties":{"inputs":[{"key":"key1","type":"number","required":"false","default":"40"}],"outputs":[{"key":"key1","type":"number","optional":"false"}]}}

@@ -2,6 +2,7 @@ package com.alesandro;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
@@ -54,11 +55,13 @@ public class runController {
         // port(8080);
 //run("/");
 
-
-        boolean regstatus = register(getjson(), "http://mdmubu108.torolab.ibm.com:8080", "/services");
+        registerJson reg = getjson(Main.name,Main.url,Main.threads,Main.version,Main.getInputs(),Main.getOutputs());
+        System.out.println(reg.returnNode2().toString());
+        String COREURL = "http://mdmubu108.torolab.ibm.com:8080";
+        boolean regstatus = register(reg, COREURL, "/services");
         if (regstatus == true) {
 
-             run("/");
+             run("/", reg ,COREURL);
 
         }
 
@@ -66,20 +69,21 @@ public class runController {
     }
 
 
-    public static ObjectNode getjson() {
-        registerJson register = new registerJson("practise");
-        return register.returnNode();
+    public static registerJson getjson(String name , String url , String threads , String version,ArrayNode inputs, ArrayNode outputs) {
+
+        registerJson register = new registerJson(name,url,threads,version, inputs,outputs);
+        return register;
 
     }
 
-    public static ObjectNode getjsonRes() {
+  /*  public static ObjectNode getjsonRes() {
         registerJson register = new registerJson("practise");
         return register.returnNode2();
 
-    }
+    }*/
 
 
-    public static boolean register(ObjectNode obj, String COREURL, String regEndPoint) {
+    public static boolean register(registerJson obj, String COREURL, String regEndPoint) {
 
 
 // register
@@ -88,7 +92,7 @@ public class runController {
         // String regEndPoint = "/services"
         try {
             jsonResponse = Unirest.post(COREURL + regEndPoint)
-                    .body(obj)
+                    .body(obj.returnNode())
                     .asString();
             // for json return <JsonNode> .asJson();
         } catch (UnirestException e) {
@@ -158,7 +162,7 @@ public class runController {
 
     }
 
-    public static void run(String serviceURL) {
+    public static void run(String serviceURL , registerJson obj, String COREURL) {
         port(8080);
         enableCORS("*","*","*");
         // running grab from server application is being run on
@@ -169,7 +173,8 @@ public class runController {
             Main service = new Main(15);
             service.run();
 
-            sendResults("http://mdmubu108.torolab.ibm.com:8080", "/run/finish", getjsonRes());
+            sendResults(COREURL, "/run/finish", obj.returnNode2());
+            res.status(200);
             return "service complete";
         });
 
