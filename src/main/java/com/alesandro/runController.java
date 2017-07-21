@@ -56,8 +56,10 @@ public class runController {
 //run("/");
 
         registerJson reg = getjson(Main.name,Main.url,Main.threads,Main.version,Main.getInputs(),Main.getOutputs());
-        System.out.println(reg.returnNode2().toString());
+      //  System.out.println(reg.returnNode2().toString());
         String COREURL = "http://mdmubu108.torolab.ibm.com:8080";
+
+        //sendResults(COREURL, "/run/finish", reg.returnNode2());
         boolean regstatus = register(reg, COREURL, "/services");
         if (regstatus == true) {
 
@@ -162,7 +164,7 @@ public class runController {
 
     }
 
-    public static void run(String serviceURL , registerJson obj, String COREURL) {
+    public static void  run(String serviceURL , registerJson obj, String COREURL) {
         port(8080);
         enableCORS("*","*","*");
         // running grab from server application is being run on
@@ -171,12 +173,18 @@ public class runController {
             System.out.println(req.body());
 
             Main service = new Main(15);
-            service.run();
+           ObjectNode objNode= service.run();
 
-            sendResults(COREURL, "/run/finish", obj.returnNode2());
+            sendResults(COREURL, "/run/finish", objNode);
             res.status(200);
+
             return "service complete";
-        });
+
+
+        }
+
+
+        );
 
 
 

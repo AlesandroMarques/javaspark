@@ -24,9 +24,14 @@ public class Main {
      static String version = "1.0.0";
 
 
-    public void run (){
+    public ObjectNode run (){
         System.out.println("service is running ");
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode obj = mapper.createObjectNode();
+        obj.put("name", name);
+        obj.put("host", url);
 
+        return obj;
 
     }
 
