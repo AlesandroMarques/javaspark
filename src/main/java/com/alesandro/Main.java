@@ -5,6 +5,10 @@ package com.alesandro; /**
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import static spark.Spark.*;
 
 import java.io.FileWriter;
@@ -18,10 +22,10 @@ public class Main {
 
     }
 
-     static String url = "http://mdmubu107.torolab.ibm.com:8080/";
-    static String name = "emptyJavaToolTEST";
-    static String threads ="1";
-     static String version = "1.0.0";
+     final String url = "http://mdmubu107.torolab.ibm.com:8080/";
+     final String name = "emptyJavaToolTEST";
+    final  String threads ="1";
+      final String version = "1.0.0";
 
 
     public ObjectNode run (){
@@ -31,12 +35,15 @@ public class Main {
         obj.put("name", name);
         obj.put("host", url);
 
+
+
         return obj;
 
     }
 
 
-     static ArrayNode getInputs(){
+
+     public ArrayNode getInputs(){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode input = mapper.createObjectNode();
         input.put("key", "key1");
@@ -53,7 +60,7 @@ return inputs;
 
 
     }
-     static ArrayNode getOutputs(){
+     public ArrayNode getOutputs(){
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode output = mapper.createObjectNode();
         output.put("key", "key1");

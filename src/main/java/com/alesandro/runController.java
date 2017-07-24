@@ -4,20 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.HttpRequest;
-import com.mashape.unirest.request.HttpRequestWithBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 
 import static spark.Spark.*;
-import static spark.route.HttpMethod.post;
 
-import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -53,17 +46,52 @@ public class runController {
         });
 
         // port(8080);
-//run("/");
+//route("/");
+        Main main = new Main(1);
+        runController runC = new runController();
 
-        registerJson reg = getjson(Main.name,Main.url,Main.threads,Main.version,Main.getInputs(),Main.getOutputs());
+        registerJson reg = runC.getjson(main.name,main.url,main.threads,main.version,main.getInputs(),main.getOutputs());
       //  System.out.println(reg.returnNode2().toString());
         String COREURL = "http://mdmubu108.torolab.ibm.com:8080";
 
-        //sendResults(COREURL, "/run/finish", reg.returnNode2());
-        boolean regstatus = register(reg, COREURL, "/services");
+
+
+        boolean regstatus = runC.register(reg, COREURL, "/services");
         if (regstatus == true) {
 
-             run("/", reg ,COREURL);
+//             runC.route("/", reg ,COREURL);
+            port(8080);
+            runC.enableCORS("*","*","*");
+            // running grab from server application is being route on
+            String serviceURL= "/";
+            String resEndPoint = "/run/finish";
+            post(serviceURL, "application/json", (req, res) -> {
+                        System.out.println(req.body());
+
+                        Main service = new Main(15);
+                        ObjectNode objNode= service.run();
+
+                        try {
+                    HttpResponse<String> jsonResponse2 = Unirest.post(COREURL + resEndPoint)
+                            .body(objNode)
+                            .asString();
+                    // for json return <JsonNode> .asJson();
+                    System.out.println(jsonResponse2.getStatus());
+                    System.out.println(jsonResponse2.getBody());
+                } catch (UnirestException e) {
+                    e.printStackTrace();
+
+                }
+
+                        res.status(200);
+
+                        return "service complete";
+
+
+                    }
+
+
+            );
 
         }
 
@@ -71,7 +99,7 @@ public class runController {
     }
 
 
-    public static registerJson getjson(String name , String url , String threads , String version,ArrayNode inputs, ArrayNode outputs) {
+    public registerJson getjson(String name , String url , String threads , String version,ArrayNode inputs, ArrayNode outputs) {
 
         registerJson register = new registerJson(name,url,threads,version, inputs,outputs);
         return register;
@@ -85,7 +113,7 @@ public class runController {
     }*/
 
 
-    public static boolean register(registerJson obj, String COREURL, String regEndPoint) {
+    public boolean register(registerJson obj, String COREURL, String regEndPoint) {
 
 
 // register
@@ -117,7 +145,7 @@ public class runController {
 
     }
 
-    private static void enableCORS(final String origin, final String methods, final String headers) {
+    private void enableCORS(final String origin, final String methods, final String headers) {
 
         options("/*", (request, response) -> {
 
@@ -143,37 +171,40 @@ public class runController {
         });
     }
 
-    public static void sendResults(String COREURL, String resEndPoint, ObjectNode obj) {
+    public void sendResults(String COREURL, String resEndPoint, ObjectNode obj) {
         // registerJson register = new registerJson("practise");
         // String COREURL = "http://mdmubu108.torolab.ibm.com:8080";
-        // String resEndPoint= "/run/done"
-        HttpResponse<String> jsonResponse2 = null;
+        // String resEndPoint= "/route/done"
+        //HttpResponse<String> jsonResponse2 = null;
 
         try {
-            jsonResponse2 = Unirest.post(COREURL + resEndPoint)
+            HttpResponse<String> jsonResponse2 = Unirest.post(COREURL + resEndPoint)
                     .body(obj)
                     .asString();
             // for json return <JsonNode> .asJson();
+            System.out.println(jsonResponse2.getStatus());
+            System.out.println(jsonResponse2.getBody());
         } catch (UnirestException e) {
             e.printStackTrace();
 
         }
         System.out.println("run/finish");
-        System.out.println(jsonResponse2.getStatus());
-        System.out.println(jsonResponse2.getBody());
+       // System.out.println(jsonResponse2.getStatus());
+      //  System.out.println(jsonResponse2.getBody());
+        return;
 
     }
 
-    public static void  run(String serviceURL , registerJson obj, String COREURL) {
+    public void route(String serviceURL , registerJson obj, String COREURL) {
         port(8080);
         enableCORS("*","*","*");
-        // running grab from server application is being run on
+        // running grab from server application is being route on
         //serviceURL= "/";
         post(serviceURL, "application/json", (req, res) -> {
             System.out.println(req.body());
 
             Main service = new Main(15);
-           ObjectNode objNode= service.run();
+         ObjectNode objNode= service.run();
 
             sendResults(COREURL, "/run/finish", objNode);
             res.status(200);
